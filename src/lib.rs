@@ -1,14 +1,26 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
+use std::cell::Cell;
+use std::collections::HashMap;
+use std::fmt;
+use std::rc::Rc;
+pub type VarSlot = Rc<Cell<f64>>;
+pub struct FuncDef {
+    arity: usize,
+    pure: bool,
+    call: Box<dyn Fn(&[f64]) -> f64>,
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+impl FuncDef {
+    pub fn native0(pure: bool, f: fn() -> f64) -> Self {
+        FuncDef {
+            arity: 0,
+            pure,
+         call: Box::new(move |_args| f()),
+        }
     }
-}
+    pub fn native1(pure: bool, f: fn(f64) -> f64) -> Self {
+        FuncDef {
+            arity: 1,
+            pure,
+            call: Box::new(move |args| f(args[0])),
+        }
+    }
+    
