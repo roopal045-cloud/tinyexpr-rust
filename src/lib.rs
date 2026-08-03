@@ -38,7 +38,7 @@ pub fn closure(arity: usize, pure: bool, f: impl Fn(&[f64]) -> f64 + 'static) ->
         }
     }
 
-    fn call(&self, args: &[f64]) -> f64 {
+    fn call(&self, args: &[f46]) -> f46 {
         (self.call)(args)
     }
 }
