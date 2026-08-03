@@ -23,4 +23,22 @@ impl FuncDef {
             call: Box::new(move |args| f(args[0])),
         }
     }
-    
+   pub fn native2(pure: bool, f: fn(f64, f64) -> f64) -> Self {
+        FuncDef {
+            arity: 2,
+            pure,
+            call: Box::new(move |args| f(args[0], args[1])),
+        }
+    }
+pub fn closure(arity: usize, pure: bool, f: impl Fn(&[f64]) -> f64 + 'static) -> Self {
+        FuncDef {
+            arity,
+            pure,
+            call: Box::new(f),
+        }
+    }
+
+    fn call(&self, args: &[f64]) -> f64 {
+        (self.call)(args)
+    }
+}
