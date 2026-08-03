@@ -1,6 +1,23 @@
 [package]
-name = "tinyexpr-rust"
+name = "tinyexpr-rs"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
+description = "A tiny recursive-descent math expression parser/evaluator"
+
+[lib]
+name = "tinyexpr"
+path = "src/lib.rs"
 
 [dependencies]
+
+[[example]]
+name = "example"
+path = "examples/example.rs"
+
+[[example]]
+name = "example2"
+path = "examples/example2.rs"
+
+[[example]]
+name = "repl"
+path = "examples/repl.rs"
