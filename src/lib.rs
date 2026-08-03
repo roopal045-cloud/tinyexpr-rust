@@ -534,3 +534,103 @@ impl<'a> Parser<'a> {
         }
     }
 }
+fn fac(a: f64) -> f64 {
+    if a < 0.0 {
+        return f64::NAN;
+    }
+    if a > u32::MAX as f64 {
+        return f64::INFINITY;
+    }
+    let ua = a as u32;
+    let mut result: u64 = 1;
+    for i in 1..=(ua as u64) {
+        if i > u64::MAX / result {
+            return f64::INFINITY;
+        }
+        result *= i;
+    }
+    result as f64
+}
+fn ncr(n: f64, r: f64) -> f64 {
+    if n < 0.0 || r < 0.0 || n < r {
+        return f64::NAN;
+    }
+    if n > u32::MAX as f64 || r > u32::MAX as f64 {
+        return f64::INFINITY;
+    }
+    let un = n as u64;
+    let mut ur = r as u64;
+    if ur > un / 2 {
+        ur = un - ur;
+    }
+    let mut result: u64 = 1;
+    let mut i: u64 = 1;
+    while i <= ur {
+        if result > u64::MAX / (un - ur + i) {
+            return f64::INFINITY;
+        }
+        result *= un - ur + i;
+        result /= i;
+        i += 1;
+    }
+    result as f64
+}
+fn npr(n: f64, r: f64) -> f64 {
+    ncr(n, r) * fac(r)
+}
+fn pi() -> f64 {
+    std::f64::consts::PI
+}
+fn e() -> f64 {
+    std::f64::consts::E
+}
+fn builtin_table(nat_log: bool) -> Vec<(&'static str, Rc<FuncDef>)> {
+    macro_rules! f0 {
+        ($f:expr) => {
+            Rc::new(FuncDef::native0(true, $f))
+        };
+    }
+    macro_rules! f1 {
+        ($f:expr) => {
+            Rc::new(FuncDef::native1(true, $f))
+        };
+    }
+    macro_rules! f2 {
+        ($f:expr) => {
+            Rc::new(FuncDef::native2(true, $f))
+        };
+    }
+    vec![
+        ("abs", f1!(f64::abs)),
+        ("acos", f1!(f64::acos)),
+        ("asin", f1!(f64::asin)),
+        ("atan", f1!(f64::atan)),
+        ("atan2", f2!(f64::atan2)),
+        ("ceil", f1!(f64::ceil)),
+        ("cos", f1!(f64::cos)),
+        ("cosh", f1!(f64::cosh)),
+        ("e", f0!(e)),
+        ("exp", f1!(f64::exp)),
+        ("fac", f1!(fac)),
+        ("floor", f1!(f64::floor)),
+        ("ln", f1!(f64::ln)),
+        (
+            "log",
+            if nat_log {
+                f1!(f64::ln)
+            } else {
+                f1!(f64::log10)
+            },
+        ),
+        ("log10", f1!(f64::log10)),
+        ("ncr", f2!(ncr)),
+        ("npr", f2!(npr)),
+        ("pi", f0!(pi)),
+        ("pow", f2!(f64::powf)),
+        ("sin", f1!(f64::sin)),
+        ("sinh", f1!(f64::sinh)),
+        ("sqrt", f1!(f64::sqrt)),
+        ("tan", f1!(f64::tan)),
+        ("tanh", f1!(f64::tanh)),
+    ]
+}
