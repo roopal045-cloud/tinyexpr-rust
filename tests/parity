@@ -4,3 +4,45 @@ fn approx(a: f64, b: f64) {
     let ok = (a.is_nan() && b.is_nan()) || a == b || (a - b).abs() < 1e-9;
     assert!(ok, "{a} != {b}");
 }
+#[test]
+fn constants_and_arithmetic() {
+    approx(interp("1").unwrap(), 1.0);
+    approx(interp("1 ").unwrap(), 1.0);
+    approx(interp("(1)").unwrap(), 1.0);
+    approx(interp("pi").unwrap(), std::f64::consts::PI);
+    approx(interp("atan(1)*4 - pi").unwrap(), 0.0);
+    approx(interp("e").unwrap(), std::f64::consts::E);
+    approx(interp("2+1").unwrap(), 3.0);
+    approx(interp("(((2+(1))))").unwrap(), 3.0);
+    approx(interp("3+2").unwrap(), 5.0);
+    approx(interp("3+2-4").unwrap(), 1.0);
+    approx(interp("3+2*4").unwrap(), 11.0);
+    approx(interp("3.0+2*4").unwrap(), 11.0);
+    approx(interp("3.0+2.0*4.0").unwrap(), 11.0);
+    approx(interp("3.0/2.0*4.0").unwrap(), 6.0);
+    approx(interp("2^2").unwrap(), 4.0);
+    approx(interp("10 % 3").unwrap(), 1.0);
+}
+
+#[test]
+fn unary_and_pow_precedence() {
+    approx(interp("-2^2").unwrap(), 4.0);
+    approx(interp("2^-2").unwrap(), 0.25);
+    approx(interp("-2^-2").unwrap(), 0.25);
+    approx(interp("2^2^3").unwrap(), 64.0);
+    approx(interp("-2").unwrap(), -2.0);
+    approx(interp("--2").unwrap(), 2.0);
+    approx(interp("---2").unwrap(), -2.0);
+    approx(interp("-(2)").unwrap(), -2.0);
+    approx(interp("-(-2)").unwrap(), 2.0);
+}
+
+#[test]
+fn functions_no_paren_unary() {
+    approx(interp("sqrt 100").unwrap(), 10.0);
+    approx(interp("sqrt(100)").unwrap(), 10.0);
+    approx(interp("sqrt (100)").unwrap(), 10.0);
+    approx(interp("sqrt(100) + 1").unwrap(), 11.0);
+    approx(interp("sqrt 100 + 1").unwrap(), 11.0);
+    approx(interp("-sqrt(100)").unwrap(), -10.0);
+}
